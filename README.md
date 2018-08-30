@@ -74,3 +74,55 @@ INSTALLED_APPS += [
 
 admin.site.register(Question)
 ```
+
+
+### DataBase Settings & Django Model & Migration & Django Admin
+编写更多视图
+#### HttpResponse
+``` python
+from django.http import HttpRespoget_querysetnse
+
+def detail(request, question_id):
+    return HttpResponse("You're looking at question %s." % question_id)
+```
+#### render
+``` python
+from django.shortcuts import render
+
+def index(request):
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    context = {'latest_question_list': latest_question_list}
+    return render(request, 'polls/index.html', context)
+```
+#### 去除模板中的硬编码 URL
+``` html
+> polls/index.html
+<li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+```
+#### 为 URL 名称添加命名空间
+``` python
+> polls/urls.py
+app_name = 'polls'
+> polls/index.html
+<li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+```
+
+### make and upload pip package
+mysite/polls全部移入django-polls文件夹准备打包用
+
+1. 创建README.rst（现在也支持.md）文件，进行项目及使用说明
+2. 创建LICENSE文件，进行开源协议说明
+3. 创建setup.py文件，进行包属性配置
+4. 创建MANIFEST.in文件，进行打包流程管理
+5. $ python setup.py sdist ;生成package
+6. $ python -m pip install --upgrade twine ; 安装twine准备上传
+7. 注册一个[https://test.pypi.org][test.pypi]账号准备上传用（这是pip专用测试环境，区分于平时正常用的[https://pypi.org][pypi]，账号也不互通。）
+8. $ twine upload --repository-url https://test.pypi.org/legacy/ dist/* ; 上传到测试
+9. $ pip install --index-url https://test.pypi.org/simple/ django-tutorials-polls ; 从测试pip安装django-tutorials-polls包
+
+
+
+
+[test.pypi]: https://test.pypi.org
+[pypi]: https://pypi.org
+
